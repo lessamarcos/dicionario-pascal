@@ -71,3 +71,41 @@ begin
         writeln('Memória cheia hahaha');
 end;
 
+procedure inserirVerbete(var l: tLista; p: string; verbete: string);
+var novo, temp, temp2: TponteiroDIc;
+	aux: Tponteiro;
+begin
+	new(novo);
+	if novo <> nil then
+	begin
+		aux:= l.inicio;
+		novo^.verbete:= verbete;
+		novo^.prox:= nil;
+		while (aux <> nil) and (aux^.palavra <> p) do
+			aux:= aux^.prox;
+		if aux^.palavra = p then
+		begin
+			if aux^.dic = nil then
+				aux^.dic:= novo
+			else if verbete < aux^.dic^.verbete then
+			begin
+				temp:= aux^.dic;
+				aux^.dic:= novo;
+				aux^.dic^.prox:= temp;
+			end
+			else
+			begin
+				temp:= aux^.dic;
+				while (temp^.prox <> nil) and (temp^.prox^.verbete < verbete) do
+					temp:= temp^.prox;
+				temp2:= temp^.prox;
+				temp^.prox:= novo;
+				novo^.prox:= temp2;
+			end;
+		end
+		else
+			writeln('Palavra não encontrada');
+	end
+	else
+		writeln('Memória cheia');
+end;
