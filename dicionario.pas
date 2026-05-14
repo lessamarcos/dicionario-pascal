@@ -39,7 +39,7 @@ begin
             l.inicio:= novo;
             l.fim:= novo
         end
-        else if p < l.inicio^.dado then
+        else if p < l.inicio^.palavra then
         begin
             temp:= l.inicio;
             l.inicio:= novo;
@@ -54,7 +54,7 @@ begin
             if aux^.prox = nil then
             begin
                 aux^.prox:= novo;
-                novo^.ant:= aux
+                novo^.ant:= aux;
                 l.fim:= novo;
             end
             else
