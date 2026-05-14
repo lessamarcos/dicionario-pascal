@@ -109,3 +109,39 @@ begin
 	else
 		writeln('Memória cheia');
 end;
+
+procedure removerVerbete(var l: lista; p: string; verbete: string);
+var aux: Tponteiro;
+	temp, temp2: TponteiroDIc;
+begin
+	if verificaVazio(l) then
+		writeln('Lista de palavras vazia')
+	else
+	begin
+		aux:= l.inicio;
+		while (aux <> nil) and (aux^.palavra <> p) do
+			aux:= aux^.prox;
+		if aux = nil then
+			writeln('Palavra não encontrada')
+		else if aux^.dic^.verbete = verbete then
+		begin
+			temp:= aux^.dic;
+			aux^.dic:= aux^.dic^.prox;
+			dispose(temp);
+		end
+		else
+		begin
+			temp:= aux^.dic;
+			while (temp^.prox <> nil) and (temp^.prox^.verbete <> verbete) do
+				temp:= temp^.prox;
+			if temp^.prox = nil then
+				writeln('O verbete não está na lista')
+			else
+			begin
+				temp2:= temp^.prox;
+				temp^.prox:= temp^.prox^.prox;
+				dispose(temp2);
+			end;
+		end;
+	end;
+end;
