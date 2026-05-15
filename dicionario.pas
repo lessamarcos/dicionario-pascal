@@ -35,7 +35,7 @@ begin
 	l.fim:= nil;
 end;
 
-function verificaPalavra(l: tlista; p: string);
+function verificaPalavra(l: tlista; p: string): boolean;
 var aux: Tponteiro;
 begin
 	aux:= l.inicio;
@@ -48,47 +48,54 @@ begin
 end;
 
 
+
+
 procedure inserirPalavra(var l: Tlista; p: string);
 var novo, temp, aux: Tponteiro;
 begin
     new(novo);
-    novo^.prox:= nil;
-    novo^.ant:= nil;
     if novo <> nil then
     begin
-        novo^.palavra:= p;
-        if verificaVazio(l) then
+        if not verificaPalavra(l, p) then
         begin
-            l.inicio:= novo;
-            l.fim:= novo
-        end
-        else if p < l.inicio^.palavra then
-        begin
-            temp:= l.inicio;
-            l.inicio:= novo;
-            novo^.prox:= temp;
-            temp^.ant:= novo;
-        end
-        else
-        begin
-            aux:= l.inicio;
-            while (aux^.prox <> nil) and (aux^.prox^.palavra < p) do 
-                aux:= aux^.prox;
-            if aux^.prox = nil then
+            novo^.prox:= nil;
+            novo^.ant:= nil;
+            novo^.palavra:= p;
+            if verificaVazio(l) then
             begin
-                aux^.prox:= novo;
-                novo^.ant:= aux;
+                l.inicio:= novo;
                 l.fim:= novo;
+            end
+            else if p < l.inicio^.palavra then
+            begin
+                temp:= l.inicio;
+                l.inicio:= novo;
+                novo^.prox:= temp;
+                temp^.ant:= novo;
             end
             else
             begin
-                temp:= aux^.prox;
-                aux^.prox:= novo;
-                novo^.prox:= temp;
-                novo^.ant:= aux;
-                temp^.ant:= novo;
+                aux:= l.inicio;
+                while (aux^.prox <> nil) and (aux^.prox^.palavra < p) do
+                    aux:= aux^.prox;
+                if aux^.prox = nil then
+                begin
+                    aux^.prox:= novo;
+                    novo^.ant:= aux;
+                    l.fim:= novo;
+                end
+                else
+                begin
+                    temp:= aux^.prox;
+                    aux^.prox:= novo;
+                    novo^.prox:= temp;
+                    novo^.ant:= aux;
+                    temp^.ant:= novo;
+                end;
             end;
-        end;
+        end
+        else
+            writeln('Palavra já existe');
     end
     else
         writeln('Memória cheia hahaha');
