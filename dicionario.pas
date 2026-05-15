@@ -251,7 +251,9 @@ begin
 			temp:= aux^.dic;
 			while (temp <> nil) do
 			begin
-				write(temp^.verbete, ', ');
+				write(temp^.verbete);
+				if temp^.prox <> nil then
+					write(', ');
 				temp:= temp^.prox;
 			end;
 			writeln;
