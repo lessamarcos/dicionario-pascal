@@ -80,6 +80,7 @@ begin
         begin
             novo^.prox:= nil;
             novo^.ant:= nil;
+			novo^.dic:= nil;
             novo^.palavra:= p;
             if verificaVazio(l) then
             begin
@@ -115,7 +116,7 @@ begin
             end;
         end
         else
-            writeln('Palavra já existe');
+            writeln('essa palavra já existe');
     end
     else
         writeln('Memória cheia hahaha');
@@ -178,6 +179,8 @@ begin
 			aux:= aux^.prox;
 		if aux = nil then
 			writeln('Palavra não encontrada')
+		else if aux^.dic = nil then
+			writeln('A palavra não possui verbetes')
 		else if aux^.dic^.verbete = v then
 		begin
 			temp:= aux^.dic;
@@ -217,15 +220,21 @@ begin
 		else
 		begin
 			temp:= aux^.dic;
-			write('Verbetes: ');
-			while (temp <> nil) do
+			if temp = nil then
+				writeln('A palavra não possui verbetes')
+			else
 			begin
-				write(temp^.verbete, ' ');
-				temp:= temp^.prox;
-			end;
+				write('Verbetes: ');
+				while (temp <> nil) do
+				begin
+					write(temp^.verbete, ' ');
+					temp:= temp^.prox;
+				end;
+			end;	
 		end;
 	end;
 end;
+		
 		
 procedure escreverTudo(l: tlista);
 var aux: Tponteiro;
@@ -245,6 +254,7 @@ begin
 				write(temp^.verbete, ', ');
 				temp:= temp^.prox;
 			end;
+			writeln;
 			aux:= aux^.prox;
 		end;
 	end;
