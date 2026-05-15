@@ -20,9 +20,19 @@ Tlista = record
     fim: Tponteiro;
 end;
 
+var lista: Tlista;
+	op: integer;
+	palavra, verbete: string;
+
 function verificaVazio(l: tlista): boolean;
 begin
     verificaVazio:= l.inicio = nil;
+end;
+
+procedure inicializarLista(var l: tlista);
+begin
+	l.inicio:= nil;
+	l.fim:= nil;
 end;
 
 procedure inserirPalavra(var l: Tlista; p: string)
@@ -193,3 +203,6 @@ begin
 		end;
 	end;
 end;
+
+begin
+	lista.inicio:= nil
