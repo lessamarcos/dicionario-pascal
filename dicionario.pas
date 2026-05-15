@@ -35,7 +35,7 @@ begin
 	l.fim:= nil;
 end;
 
-procedure inserirPalavra(var l: Tlista; p: string)
+procedure inserirPalavra(var l: Tlista; p: string);
 var novo, temp, aux: Tponteiro;
 begin
     new(novo);
@@ -120,7 +120,7 @@ begin
 		writeln('Memória cheia');
 end;
 
-procedure removerVerbete(var l: lista; p: string; verbete: string);
+procedure removerVerbete(var l: Tlista; p: string; verbete: string);
 var aux: Tponteiro;
 	temp, temp2: TponteiroDIc;
 begin
@@ -200,9 +200,56 @@ begin
 				temp:= temp^.prox;
 			end;
 			aux:= aux^.prox;
+			writeln;
 		end;
 	end;
 end;
 
 begin
-	lista.inicio:= nil
+	inicializarLista(lista);
+	op:= 0;
+	while op <> 6 do
+	begin
+		writeln;
+		writeln('1 - Inserir palavra');
+		writeln('2 - Inserir verbete');
+		writeln('3 - Remover verbete');
+		writeln('4 - Consultar');
+		writeln('5 - Escrever tudo');
+		writeln('6 - Sair');
+		write('Opcao: ');
+		readln(op);
+		case op of
+			1: begin
+				write('Palavra: ');
+				readln(palavra);
+				palavra:= upcase(palavra);
+				inserirPalavra(lista, palavra);
+			end;
+			2: begin
+				write('Digite a palavra na qual quer inserir o verbete e o verbete: ');
+				readln(palavra, verbete);
+				palavra:= upcase(palavra);
+				verbete:= upcase(verbete);
+				inserirVerbete(lista, palavra, verbete);
+			end;
+			3: begin
+				write('Digite a palavra na qual quer remover o verbete e o verbete: ');
+				readln(palavra, verbete);
+				palavra:= upcase(palavra);
+				verbete:= upcase(verbete);
+				removerVerbete(lista, palavra, verbete);
+			end;
+			4: begin
+				write('Digite a palavra a ser consultada: ');
+				readln(palavra);
+				palavra:= upcase(palavra);
+				consultar(lista, palavra);
+			end;
+			5:	escreverTudo(lista);
+		else
+			writeln('Opcao invalida');
+		end;
+	end;
+end .
+
