@@ -47,7 +47,27 @@ begin
 		verificaPalavra:= true;
 end;
 
-
+function verificaVerbete(l: tlista; p, v: string): boolean;
+var aux: Tponteiro;
+	aux2: TponteiroDic;
+begin
+	aux:= l.inicio;
+	while (aux <> nil) and (aux^.palavra <> p) do
+		aux:= aux^.prox;
+	if aux <> nil then
+	begin
+		aux2:= aux^.dic;
+		while (aux2 <> nil) and (aux2^.verbete <> v) do
+			aux2:= aux2^.prox;
+		if aux2 = nil then
+			verificaVerbete:= false
+		else
+			verificaVerbete:= true;
+	end
+	else
+		verificaVerbete:= true;
+end;
+	
 
 
 procedure inserirPalavra(var l: Tlista; p: string);
@@ -101,7 +121,7 @@ begin
         writeln('Memória cheia hahaha');
 end;
 
-procedure inserirVerbete(var l: tLista; p: string; verbete: string);
+procedure inserirVerbete(var l: tLista; p, v: string);
 var novo, temp, temp2: TponteiroDIc;
 	aux: Tponteiro;
 begin
@@ -109,7 +129,7 @@ begin
 	if novo <> nil then
 	begin
 		aux:= l.inicio;
-		novo^.verbete:= verbete;
+		novo^.verbete:= v;
 		novo^.prox:= nil;
 		while (aux <> nil) and (aux^.palavra <> p) do
 			aux:= aux^.prox;
@@ -140,7 +160,7 @@ begin
 		writeln('Memória cheia');
 end;
 
-procedure removerVerbete(var l: Tlista; p: string; verbete: string);
+procedure removerVerbete(var l: Tlista; p: string; v: string);
 var aux: Tponteiro;
 	temp, temp2: TponteiroDIc;
 begin
@@ -153,7 +173,7 @@ begin
 			aux:= aux^.prox;
 		if aux = nil then
 			writeln('Palavra não encontrada')
-		else if aux^.dic^.verbete = verbete then
+		else if aux^.dic^.verbete = v then
 		begin
 			temp:= aux^.dic;
 			aux^.dic:= aux^.dic^.prox;
@@ -162,7 +182,7 @@ begin
 		else
 		begin
 			temp:= aux^.dic;
-			while (temp^.prox <> nil) and (temp^.prox^.verbete <> verbete) do
+			while (temp^.prox <> nil) and (temp^.prox^.verbete <> v) do
 				temp:= temp^.prox;
 			if temp^.prox = nil then
 				writeln('O verbete não está na lista')
