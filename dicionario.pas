@@ -172,6 +172,7 @@ begin
 		else
 		begin
 			temp:= aux^.dic;
+			write('Verbetes: ');
 			while (temp <> nil) do
 			begin
 				write(temp^.verbete, ' ');
@@ -192,7 +193,7 @@ begin
 		aux:= l.inicio;
 		while (aux <> nil) do
 		begin
-			writeln(aux^.palavra, ' :');
+			write(aux^.palavra, ': ');
 			temp:= aux^.dic;
 			while (temp <> nil) do
 			begin
@@ -200,7 +201,6 @@ begin
 				temp:= temp^.prox;
 			end;
 			aux:= aux^.prox;
-			writeln;
 		end;
 	end;
 end;
@@ -221,32 +221,46 @@ begin
 		readln(op);
 		case op of
 			1: begin
+				writeln;
 				write('Palavra: ');
 				readln(palavra);
 				palavra:= upcase(palavra);
 				inserirPalavra(lista, palavra);
 			end;
 			2: begin
-				write('Digite a palavra na qual quer inserir o verbete e o verbete: ');
-				readln(palavra, verbete);
+				writeln;
+				write('Palavra: ');
+				readln(palavra);
+				write('Verbete: ');
+				readln(verbete);
 				palavra:= upcase(palavra);
 				verbete:= upcase(verbete);
 				inserirVerbete(lista, palavra, verbete);
 			end;
 			3: begin
-				write('Digite a palavra na qual quer remover o verbete e o verbete: ');
-				readln(palavra, verbete);
+				writeln;
+				write('Palavra: ');
+				readln(palavra);
+				write('Verbete: ');
+				readln(verbete);
 				palavra:= upcase(palavra);
 				verbete:= upcase(verbete);
 				removerVerbete(lista, palavra, verbete);
 			end;
 			4: begin
+				writeln;
 				write('Digite a palavra a ser consultada: ');
 				readln(palavra);
 				palavra:= upcase(palavra);
+				writeln;
 				consultar(lista, palavra);
+				writeln;
 			end;
-			5:	escreverTudo(lista);
+			5: begin
+				writeln;	
+				escreverTudo(lista);
+				writeln;
+			end;
 		else
 			writeln('Opcao invalida');
 		end;
