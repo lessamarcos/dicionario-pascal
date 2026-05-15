@@ -35,6 +35,19 @@ begin
 	l.fim:= nil;
 end;
 
+function verificaPalavra(l: tlista; p: string);
+var aux: Tponteiro;
+begin
+	aux:= l.inicio;
+	while (aux <> nil) and (aux^.palavra <> p) do
+		aux:= aux^.prox;
+	if aux = nil then
+		verificaPalavra:= false
+	else
+		verificaPalavra:= true;
+end;
+
+
 procedure inserirPalavra(var l: Tlista; p: string);
 var novo, temp, aux: Tponteiro;
 begin
