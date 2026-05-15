@@ -65,7 +65,7 @@ begin
 			verificaVerbete:= true;
 	end
 	else
-		verificaVerbete:= true;
+		verificaVerbete:= false;
 end;
 	
 
@@ -128,33 +128,38 @@ begin
 	new(novo);
 	if novo <> nil then
 	begin
-		aux:= l.inicio;
-		novo^.verbete:= v;
-		novo^.prox:= nil;
-		while (aux <> nil) and (aux^.palavra <> p) do
-			aux:= aux^.prox;
-		if aux^.palavra = p then
+		if not verificaVerbete(l, p, v) then
 		begin
-			if aux^.dic = nil then
-				aux^.dic:= novo
-			else if verbete < aux^.dic^.verbete then
+			aux:= l.inicio;
+			novo^.verbete:= v;
+			novo^.prox:= nil;
+			while (aux <> nil) and (aux^.palavra <> p) do
+				aux:= aux^.prox;
+			if aux^.palavra = p then
 			begin
-				temp:= aux^.dic;
-				aux^.dic:= novo;
-				aux^.dic^.prox:= temp;
+				if aux^.dic = nil then
+					aux^.dic:= novo
+				else if v < aux^.dic^.verbete then
+				begin
+					temp:= aux^.dic;
+					aux^.dic:= novo;
+					aux^.dic^.prox:= temp;
+				end
+				else
+				begin
+					temp:= aux^.dic;
+					while (temp^.prox <> nil) and (temp^.prox^.verbete < v) do
+						temp:= temp^.prox;
+					temp2:= temp^.prox;
+					temp^.prox:= novo;
+					novo^.prox:= temp2;
+				end;
 			end
 			else
-			begin
-				temp:= aux^.dic;
-				while (temp^.prox <> nil) and (temp^.prox^.verbete < verbete) do
-					temp:= temp^.prox;
-				temp2:= temp^.prox;
-				temp^.prox:= novo;
-				novo^.prox:= temp2;
-			end;
+				writeln('Palavra não encontrada');
 		end
 		else
-			writeln('Palavra não encontrada');
+			writeln('O verbete ja está na lista')
 	end
 	else
 		writeln('Memória cheia');
