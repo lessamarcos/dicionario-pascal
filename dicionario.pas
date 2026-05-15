@@ -171,3 +171,25 @@ begin
 	end;
 end;
 		
+procedure escreverTudo(l: tlista);
+var aux: Tponteiro;
+	temp: TponteiroDic;
+begin
+	if verificaVazio(l) then
+		writeln('Lista vazia')
+	else
+	begin
+		aux:= l.inicio;
+		while (aux <> nil) do
+		begin
+			writeln(aux^.palavra, ' :');
+			temp:= aux^.dic;
+			while (temp <> nil) do
+			begin
+				write(temp^.verbete, ', ');
+				temp:= temp^.prox;
+			end;
+			aux:= aux^.prox;
+		end;
+	end;
+end;
