@@ -145,3 +145,29 @@ begin
 		end;
 	end;
 end;
+
+procedure consultar(l: Tlista; p: string);
+var aux: Tponteiro;
+	temp: TponteiroDic;
+begin
+	if verificaVazio(l) then
+		writeln('Lista vazia')
+	else
+	begin
+		aux:= l.inicio;
+		while (aux <> nil) and (aux^.palavra <> p) do
+			aux:= aux^.prox;
+		if aux = nil then
+			writeln('Palavra não encontrada')
+		else
+		begin
+			temp:= aux^.dic;
+			while (temp <> nil) do
+			begin
+				write(temp^.verbete, ' ');
+				temp:= temp^.prox;
+			end;
+		end;
+	end;
+end;
+		
