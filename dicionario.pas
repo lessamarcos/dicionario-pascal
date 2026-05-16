@@ -262,6 +262,25 @@ begin
 	end;
 end;
 
+function formatarString(s: string): string;
+var i: integer;
+	resultado: string;
+begin
+	resultado:= '';
+	if length(s) > 0 then
+	begin
+		resultado:= upcase(s[i]);
+		for i:= 2 to lenght(s) do
+		begin
+			if (s[i] >= 'A') and (s[i] <= 'Z') then
+				resultado:= resultado + char(ord(s[i]) + 32)
+			else
+				resultado:= resultado + s[i];
+		end;
+	end;
+	formatarString:= resultado;
+end;
+
 begin
 	inicializarLista(lista);
 	op:= 0;
