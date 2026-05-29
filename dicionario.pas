@@ -14,14 +14,9 @@ type
         dic: TponteiroDic;
         prox: TponteiroLista;
     end;
-var lista: TponteiroLista; 
+var lista: TponteiroLista;
     op: integer;
     palavra, traducao: string;
-
-procedure criarLista(var l: TponteiroLista);
-begin
-    l:= nil;
-end;
 
 function formatarString(s: string): string;
 var i: integer;
@@ -34,7 +29,7 @@ begin
 		for i:= 2 to length(s) do
 		begin
 			if (s[i] >= 'A') and (s[i] <= 'Z') then
-				resultado:= resultado + char(ord(s[i]) + 32)
+				resultado:= resultado + chr(ord(s[i]) + 32)
 			else
 				resultado:= resultado + s[i];
 		end;
@@ -44,31 +39,30 @@ end;
 
 function verificaChave(l: TponteiroLista; chave: string): boolean;
 begin
-    while (l <> nil) and (l^.chave <> chave) do 
+    while (l <> nil) and (l^.chave < chave) do
         l:= l^.prox;
-    if l = nil then
-        verificaChave:= false
-    else
-        verificaChave:= true;
+    verificaChave:= (l <> nil) and (l^.chave = chave);
 end;
 
 function verificaVerbete(d: TponteiroDic; verbete: string): boolean;
 begin
-    while (d <> nil) and (d^.portugues <> verbete) do
+    while (d <> nil) and (d^.portugues < verbete) do
         d:= d^.prox;
-    if d = nil then
-        verificaVerbete:= false
-    else
-        verificaVerbete:= true;
+    verificaVerbete:= (d <> nil) and (d^.portugues = verbete);
 end;
 
 procedure inserirChave(var l: TponteiroLista; chave: string);
-var novo, aux, temp: TponteiroLista;
+var novo, aux: TponteiroLista;
+    ultimoMenor: TponteiroDic;
 begin
-    new(novo);
-    if novo <> nil then
+    if verificaChave(l, chave) then
+        writeln('Chave ja existe')
+    else
     begin
-        if not verificaChave(l, chave) then
+        new(novo);
+        if novo = nil then
+            writeln('Memória cheia hahaha')
+        else
         begin
             novo^.chave:= chave;
             novo^.dic:= nil;
@@ -77,7 +71,7 @@ begin
             if l = nil then
                 l:= novo
             else if chave < l^.chave then
-            begin    
+            begin
                 novo^.prox:= l;
                 l^.ant:= novo;
                 l:= novo;
@@ -87,75 +81,81 @@ begin
                 aux:= l;
                 while (aux^.prox <> nil) and (aux^.prox^.chave < chave) do
                     aux:= aux^.prox;
-                if aux^.prox = nil then
+                novo^.prox:= aux^.prox;
+                novo^.ant:= aux;
+                if aux^.prox <> nil then
+                    aux^.prox^.ant:= novo;
+                aux^.prox:= novo;
+                if aux^.dic <> nil then
                 begin
-                    aux^.prox:= novo;
-                    novo^.ant:= aux;
-                end
-                else
-                begin
-                    temp:= aux^.prox;
-                    aux^.prox:= novo;
-                    novo^.ant:= aux;
-                    novo^.prox:= temp;
-                    temp^.ant:= novo;
+                    if aux^.dic^.portugues >= chave then
+                    begin
+                        novo^.dic:= aux^.dic;
+                        aux^.dic:= nil;
+                    end
+                    else
+                    begin
+                        ultimoMenor:= aux^.dic;
+                        while (ultimoMenor^.prox <> nil) and (ultimoMenor^.prox^.portugues < chave) do
+                            ultimoMenor:= ultimoMenor^.prox;
+                        novo^.dic:= ultimoMenor^.prox;
+                        ultimoMenor^.prox:= nil;
+                    end;
                 end;
             end;
-        end
-        else
-            writeln('Chave ja existe');
-    end
-    else
-        writeln('Memória cheia haha')
+            writeln('Chave ', chave, ' inserida');
+        end;
+    end;
 end;
 
 function buscarGrupo(l: TponteiroLista; verbete: string): TponteiroLista;
+var grupo: TponteiroLista;
 begin
+    grupo:= nil;
     while (l <> nil) and (l^.chave <= verbete) do
+    begin
+        grupo:= l;
         l:= l^.prox;
-    buscarGrupo:= l;
+    end;
+    buscarGrupo:= grupo;
 end;
 
 procedure inserirVerbete(var l: TponteiroLista; verbete, traducao: string);
-var novo, aux, temp: TponteiroDic;
+var novo, aux: TponteiroDic;
     grupo: TponteiroLista;
 begin
     grupo:= buscarGrupo(l, verbete);
     if grupo = nil then
-        writeln('Não ha chave maior que ', verbete, ' Cadastre uma chave primeiro')
+        writeln('Nao ha chave menor ou igual a ', verbete, '. Cadastre uma chave primeiro')
+    else if verificaVerbete(grupo^.dic, verbete) then
+        writeln('O verbete ja existe')
     else
     begin
-        if not verificaVerbete(grupo^.dic, verbete) then
+        new(novo);
+        if novo = nil then
+            writeln('Memória cheia haha')
+        else
         begin
-            new(novo);
-            if novo <> nil then
+            novo^.portugues:= verbete;
+            novo^.ingles:= traducao;
+            novo^.prox:= nil;
+            if grupo^.dic = nil then
+                grupo^.dic:= novo
+            else if verbete < grupo^.dic^.portugues then
             begin
-                novo^.portugues:= verbete;
-                novo^.ingles:= traducao;
-                novo^.prox:= nil;
-                if grupo^.dic = nil then
-                    grupo^.dic:= novo
-                else if verbete < grupo^.dic^.portugues then
-                begin
-                    novo^.prox:= grupo^.dic;
-                    grupo^.dic:= novo;
-                end
-                else
-                begin
-                    aux:= grupo^.dic;
-                    while (aux^.prox <> nil) and (aux^.prox^.portugues < verbete) do
-                        aux:= aux^.prox;
-                    temp:= aux^.prox;
-                    aux^.prox:= novo;
-                    novo^.prox:= temp;
-                end;
-                writeln('Verbete ', verbete, ' inserido no grupo de ', grupo^.chave)
+                novo^.prox:= grupo^.dic;
+                grupo^.dic:= novo;
             end
             else
-                writeln('Memória cheia');
-        end
-        else
-            writeln('O verbete ja existe')
+            begin
+                aux:= grupo^.dic;
+                while (aux^.prox <> nil) and (aux^.prox^.portugues < verbete) do
+                    aux:= aux^.prox;
+                novo^.prox:= aux^.prox;
+                aux^.prox:= novo;
+            end;
+            writeln('Verbete ', verbete, ' inserido no grupo de ', grupo^.chave);
+        end;
     end;
 end;
 
@@ -165,7 +165,7 @@ var grupo: TponteiroLista;
 begin
     grupo:= buscarGrupo(l, verbete);
     if grupo = nil then
-        writeln('Não há grupo para ', verbete)
+        writeln('Nao ha grupo para ', verbete)
     else if grupo^.dic = nil then
         writeln('Grupo sem verbetes')
     else if grupo^.dic^.portugues = verbete then
@@ -173,6 +173,7 @@ begin
         temp:= grupo^.dic;
         grupo^.dic:= grupo^.dic^.prox;
         dispose(temp);
+        writeln('Verbete ', verbete, ' removido');
     end
     else
     begin
@@ -180,40 +181,48 @@ begin
         while (aux^.prox <> nil) and (aux^.prox^.portugues <> verbete) do
             aux:= aux^.prox;
         if aux^.prox = nil then
-            writeln('Verbete não encontrado')
+            writeln('Verbete nao encontrado')
         else
         begin
             temp:= aux^.prox;
             aux^.prox:= aux^.prox^.prox;
             dispose(temp);
+            writeln('Verbete ', verbete, ' removido');
         end;
     end;
 end;
-        
+
+procedure moverVerbetes(var destino: TponteiroDic; origem: TponteiroDic);
+var aux: TponteiroDic;
+begin
+    if destino = nil then
+        destino:= origem
+    else if origem <> nil then
+    begin
+        aux:= destino;
+        while aux^.prox <> nil do
+            aux:= aux^.prox;
+        aux^.prox:= origem;
+    end;
+end;
+
 procedure removerChave(var l: TponteiroLista; chave: string);
 var aux, temp: TponteiroLista;
-    verbete: TponteiroDic;
 begin
     if l = nil then
         writeln('Lista vazia')
     else if l^.chave = chave then
     begin
-        if l^.prox = nil then
-            writeln('Não é possível remover a única chave')
+        if l^.dic <> nil then
+            writeln('Nao e possivel remover a primeira chave enquanto houver verbetes nela. Remova os verbetes primeiro.')
         else
         begin
             temp:= l;
-            if temp^.dic <> nil then
-            begin
-                verbete:= temp^.dic;
-                while verbete^.prox <> nil do
-                    verbete:= verbete^.prox;
-                verbete^.prox:= l^.prox^.dic;
-                l^.prox^.dic:= temp^.dic;
-            end;
             l:= l^.prox;
-            l^.ant:= nil;
+            if l <> nil then
+                l^.ant:= nil;
             dispose(temp);
+            writeln('Chave ', chave, ' removida');
         end;
     end
     else
@@ -222,37 +231,16 @@ begin
         while (aux^.prox <> nil) and (aux^.prox^.chave <> chave) do
             aux:= aux^.prox;
         if aux^.prox = nil then
-            writeln('Chave não encontrada')
+            writeln('Chave nao encontrada')
         else
         begin
             temp:= aux^.prox;
-            if temp^.dic <> nil then
-            begin
-                if temp^.prox <> nil then
-                begin
-                    verbete:= temp^.dic;
-                    while verbete^.prox <> nil do
-                        verbete:= verbete^.prox;
-                    verbete^.prox:= temp^.prox^.dic;
-                    temp^.prox^.dic:= temp^.dic;
-                end
-                else
-                begin
-                    verbete:= aux^.dic;
-                    if verbete = nil then
-                        aux^.dic:= temp^.dic
-                    else
-                    begin
-                        while verbete^.prox <> nil do
-                            verbete:= verbete^.prox;
-                        verbete^.prox:= temp^.dic;
-                    end;
-                end;
-            end;
+            moverVerbetes(aux^.dic, temp^.dic);
             aux^.prox:= temp^.prox;
             if temp^.prox <> nil then
                 temp^.prox^.ant:= aux;
-            dispose(temp)
+            dispose(temp);
+            writeln('Chave ', chave, ' removida');
         end;
     end;
 end;
@@ -270,17 +258,17 @@ begin
         while (aux <> nil) and (aux^.portugues <> verbetePt) do
             aux:= aux^.prox;
         if aux = nil then
-            writeln('Verbete não encontrado')
+            writeln('Verbete nao encontrado')
         else
             writeln(aux^.portugues, ' -> ', aux^.ingles);
     end;
 end;
-        
+
 procedure escreverTudo(l: TponteiroLista);
 var verbete: TponteiroDic;
 begin
     if l = nil then
-        writeln('Dicionário vazio')
+        writeln('Dicionario vazio')
     else
     begin
         while l <> nil do
@@ -288,12 +276,12 @@ begin
             writeln(l^.chave);
             verbete:= l^.dic;
             if verbete = nil then
-                writeln(' Sem verbetes')
+                writeln('  (sem verbetes)')
             else
             begin
                 while verbete <> nil do
                 begin
-                    writeln(' ', verbete^.portugues, ' -> ', verbete^.ingles);
+                    writeln('  ', verbete^.portugues, ' -> ', verbete^.ingles);
                     verbete:= verbete^.prox;
                 end;
             end;
@@ -304,58 +292,55 @@ end;
 
 
 begin
-    criarLista(lista);
-    op := 0;
-    while op <> 7 do
-    begin
+    lista:= nil;
+    repeat
         writeln;
-        writeln('1 - Inserir chave');
-        writeln('2 - Inserir verbete');
-        writeln('3 - Remover verbete');
-        writeln('4 - Remover chave');
-        writeln('5 - Consultar');
-        writeln('6 - Escrever tudo');
+        writeln('1 - Incluir palavra-chave');
+        writeln('2 - Incluir no dicionario');
+        writeln('3 - Remover do dicionario');
+        writeln('4 - Consultar');
+        writeln('5 - Escrever todo dicionario');
+        writeln('6 - Remover palavra-chave');
         writeln('7 - Sair');
-        write('Opcao: ');
         readln(op);
         case op of
             1: begin
-                write('Chave: ');
+                write('Palavra-chave: ');
                 readln(palavra);
-                palavra := formatarString(palavra);
+                palavra:= formatarString(palavra);
                 inserirChave(lista, palavra);
             end;
             2: begin
-                write('Verbete: ');
+                write('Verbete (portugues): ');
                 readln(palavra);
-                write('Traducao: ');
+                write('Traducao (ingles): ');
                 readln(traducao);
-                palavra := formatarString(palavra);
-                traducao := formatarString(traducao);
+                palavra:= formatarString(palavra);
+                traducao:= formatarString(traducao);
                 inserirVerbete(lista, palavra, traducao);
             end;
             3: begin
                 write('Verbete a remover: ');
                 readln(palavra);
-                palavra := formatarString(palavra);
+                palavra:= formatarString(palavra);
                 removerVerbete(lista, palavra);
             end;
             4: begin
-                write('Chave a remover: ');
-                readln(palavra);
-                palavra := formatarString(palavra);
-                removerChave(lista, palavra);
-            end;
-            5: begin
                 write('Verbete a consultar: ');
                 readln(palavra);
-                palavra := formatarString(palavra);
+                palavra:= formatarString(palavra);
                 consultar(lista, palavra);
             end;
-            6: escreverTudo(lista);
+            5: escreverTudo(lista);
+            6: begin
+                write('Chave a remover: ');
+                readln(palavra);
+                palavra:= formatarString(palavra);
+                removerChave(lista, palavra);
+            end;
             7: writeln('Saindo...');
         else
             writeln('Opcao invalida');
         end;
-    end;
+    until op = 7;
 end.
