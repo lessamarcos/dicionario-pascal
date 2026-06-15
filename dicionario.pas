@@ -14,7 +14,7 @@ type
         dic: TponteiroDic;
         prox: TponteiroLista;
     end;
-var lista: TponteiroLista;
+var lista, fim: TponteiroLista;
     op: integer;
     palavra, traducao: string;
 
@@ -51,7 +51,7 @@ begin
     verificaVerbete:= (d <> nil) and (d^.portugues = verbete);
 end;
 
-procedure inserirChave(var l: TponteiroLista; chave: string);
+procedure inserirChave(var l: TponteiroLista; var fim: TponteiroLista; chave: string);
 var novo, aux: TponteiroLista;
     ultimoMenor: TponteiroDic;
 begin
@@ -69,7 +69,10 @@ begin
             novo^.prox:= nil;
             novo^.ant:= nil;
             if l = nil then
-                l:= novo
+            begin
+                l:= novo;
+                fim:= novo;
+            end
             else if chave < l^.chave then
             begin
                 novo^.prox:= l;
@@ -84,7 +87,9 @@ begin
                 novo^.prox:= aux^.prox;
                 novo^.ant:= aux;
                 if aux^.prox <> nil then
-                    aux^.prox^.ant:= novo;
+                    aux^.prox^.ant:= novo
+                else
+                    fim:= novo;
                 aux^.prox:= novo;
                 if aux^.dic <> nil then
                 begin
@@ -206,7 +211,7 @@ begin
     end;
 end;
 
-procedure removerChave(var l: TponteiroLista; chave: string);
+procedure removerChave(var l: TponteiroLista; var fim: TponteiroLista; chave: string);
 var aux, temp: TponteiroLista;
 begin
     if l = nil then
@@ -220,7 +225,9 @@ begin
             temp:= l;
             l:= l^.prox;
             if l <> nil then
-                l^.ant:= nil;
+                l^.ant:= nil
+            else
+                fim:= nil;
             dispose(temp);
             writeln('Chave ', chave, ' removida');
         end;
@@ -238,7 +245,9 @@ begin
             moverVerbetes(aux^.dic, temp^.dic);
             aux^.prox:= temp^.prox;
             if temp^.prox <> nil then
-                temp^.prox^.ant:= aux;
+                temp^.prox^.ant:= aux
+            else
+                fim:= aux;
             dispose(temp);
             writeln('Chave ', chave, ' removida');
         end;
@@ -290,9 +299,36 @@ begin
     end;
 end;
 
+procedure escreverInverso(fim: TponteiroLista);
+var verbete: TponteiroDic;
+begin
+    if fim = nil then
+        writeln('Dicionario vazio')
+    else
+    begin
+        while fim <> nil do
+        begin
+            writeln(fim^.chave);
+            verbete:= fim^.dic;
+            if verbete = nil then
+                writeln('  (sem verbetes)')
+            else
+            begin
+                while verbete <> nil do
+                begin
+                    writeln('  ', verbete^.portugues, ' -> ', verbete^.ingles);
+                    verbete:= verbete^.prox;
+                end;
+            end;
+            fim:= fim^.ant;
+        end;
+    end;
+end;
+
 
 begin
     lista:= nil;
+    fim:= nil;
     repeat
         writeln;
         writeln('1 - Incluir palavra-chave');
@@ -301,14 +337,15 @@ begin
         writeln('4 - Consultar');
         writeln('5 - Escrever todo dicionario');
         writeln('6 - Remover palavra-chave');
-        writeln('7 - Sair');
+        writeln('7 - Escrever invertido');
+        writeln('8 - Sair');
         readln(op);
         case op of
             1: begin
                 write('Palavra-chave: ');
                 readln(palavra);
                 palavra:= formatarString(palavra);
-                inserirChave(lista, palavra);
+                inserirChave(lista, fim, palavra);
             end;
             2: begin
                 write('Verbete (portugues): ');
@@ -336,11 +373,12 @@ begin
                 write('Chave a remover: ');
                 readln(palavra);
                 palavra:= formatarString(palavra);
-                removerChave(lista, palavra);
+                removerChave(lista, fim, palavra);
             end;
-            7: writeln('Saindo...');
+            7: escreverInverso(fim);
+            8: writeln('Saindo...');
         else
             writeln('Opcao invalida');
         end;
-    until op = 7;
+    until op = 8;
 end.
